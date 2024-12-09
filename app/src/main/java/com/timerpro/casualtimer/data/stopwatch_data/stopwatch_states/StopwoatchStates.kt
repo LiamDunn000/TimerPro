@@ -35,10 +35,4 @@ class StopwatchStates: ViewModel() {
     var lapStopwatchMinutes by mutableIntStateOf(0)
     var lapStopwatchHours by mutableIntStateOf(0)
 
-    // Stopwatch Button Text States
-    var toggleStopwatchButtonText by mutableStateOf("Start")
-    var lapAndResetStopwatchButtonText by mutableStateOf("Lap")
-
-    // Stopwatch Notification Text States
-    var toggleStopwatchActionButtonText by mutableStateOf("Pause")
-    var lapAndResetStopwatchActionButtonText by mutableStateOf("Lap") }
+}

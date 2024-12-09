@@ -1,66 +1,123 @@
 package com.timerpro.casualtimer.functionality.timer_functionality
 
+import android.content.Context
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.timerpro.casualtimer.data.timer_data.timer_states.TimerStates
 import com.timerpro.casualtimer.data.timer_data.timer_states.timerStates
+import com.timerpro.casualtimer.functionality.general_functionality.generalFunctionality
 import com.timerpro.timertest.data.PresetTime
 import com.timerpro.timertest.data.presetTimeDatabase
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 val presetTimeFunctionality = PresetTimeFunctionality()
 
-class PresetTimeFunctionality(): ViewModel() {
+class PresetTimeFunctionality(val t: TimerStates = timerStates): ViewModel() {
 
     /* DAO FUNCTIONS
     ----------------------------------------------------------------------------------------------*/
-    // Insert Preset Time
-    fun insertPresetTime(presetTime: PresetTime){
+    fun insertPresetTime(context: Context, presetTime: PresetTime){
         viewModelScope.launch {
-            presetTimeDatabase.presetTimeDao.insertPresetTime(presetTime = presetTime) }}
+            try {
+                presetTimeDatabase.presetTimeDao.insertPresetTime(presetTime = presetTime)
+                generalFunctionality.showToast(context = context, message = "Preset Time Added")
+        } catch (e: Exception) {
+            generalFunctionality.showToast(context = context, message = "Error Preset Time Not Added")
+            return@launch
+                }
+            }
+        }
 
-    // Update Preset Time
-    fun updatePresetTime(presetTime: PresetTime){
+    fun updatePresetTime(context: Context){
+
+        generalFunctionality.vibrateOnButtonClick(context = context)
+
+        if (t.areChangesMadeToPresetTime) {
+            viewModelScope.launch {
+                try {
+                    presetTimeDatabase.presetTimeDao.updatePresetTime(
+                        presetTime =
+                        t.selectedPresetTimeList[0].copy(
+                            name = t.presetTimeTitleTextFieldValue,
+                            hours = t.presetHourInput.text.toInt(),
+                            minutes = t.presetMinuteInput.text.toInt(),
+                            seconds = t.presetSecondInput.text.toInt()
+                        )
+                    )
+                        delay(3)
+                        resetPresetTimeOptionPanelState()
+                        resetPresetTimeDialogState()
+                        generalFunctionality.showToast(
+                            context = context,
+                            message = "Preset Time Updated"
+                        )
+                    } catch (e: Exception) {
+                        resetPresetTimeOptionPanelState()
+                    resetPresetTimeDialogState()
+                    generalFunctionality.showToast(context = context, message = "Error Updating Preset Time")
+                    return@launch
+                }
+            }
+        } else resetPresetTimeOptionPanelState(); resetPresetTimeDialogState()
+    }
+
+    fun deletePresetTime(context: Context, list: List<PresetTime>){
         viewModelScope.launch {
-            presetTimeDatabase.presetTimeDao.updatePresetTime(presetTime = presetTime) }}
+            try {
+                generalFunctionality.showToast(
+                    context = context,
+                    message = "${t.selectedPresetTimeList.size} Preset Time Deleted")
+                delay(1)
+                presetTimeDatabase.presetTimeDao.deletePresetTime(list = list)
+            } catch (e: Exception) {
+                generalFunctionality.showToast(context = context, message = "Error Deleting Preset Time")
+                return@launch
+            }
+            }
+        }
 
-    // Delete Preset Time
-    fun deletePresetTime(presetTime: PresetTime){
-        viewModelScope.launch {
-            presetTimeDatabase.presetTimeDao.deletePresetTime(presetTime = presetTime) }}
-
-    // Retrieve All Preset Times
     fun retrieveAllPresetTimes() = presetTimeDatabase.presetTimeDao.retrieveAllPresetTimes().asLiveData(viewModelScope.coroutineContext)
     // ---------------------------------------------------------------------------------------------
 
-
-    // Reset Add Preset Time Dialog State
-    fun resetAddPresetTimeDialogState() {
-
-        // Close Add Preset Time Dialog
-        timerStates.isAddPresetTimeDialogOpen = false
-
-        // Reset Add Preset Time Dialog Text Field Values
+    // PRESET TIME DIALOG --------------------------------------------------------------------------
+    fun resetPresetTimeDialogState() {
+        t.isAddPresetTimeDialogOpen = false
+        t.isPresetTimeBeingEdited = false
         resetAddPresetTimeDialogTextFieldValues() }
 
     fun resetAddPresetTimeDialogTextFieldValues() {
+            t.presetTimeTitleTextFieldValue = ""
+            t.presetHourInput = TextFieldValue("0")
+            t.presetMinuteInput = TextFieldValue("0")
+            t.presetSecondInput = TextFieldValue("0")
+    }
 
-        // Reset Add Preset Time Dialog Text Field Values
-        timerStates.presetTimeNameTextFieldValue = ""
-        timerStates.presetHourInput = TextFieldValue("0")
-        timerStates.presetMinuteInput = TextFieldValue("0")
-        timerStates.presetSecondInput = TextFieldValue("0") }
+    fun loadPresetTimeToDialog(presetTime: PresetTime) {
+        t.presetTimeTitleTextFieldValue = presetTime.name
+        t.presetHourInput = TextFieldValue(presetTime.hours.toString())
+        t.presetMinuteInput = TextFieldValue(presetTime.minutes.toString())
+        t.presetSecondInput = TextFieldValue(presetTime.seconds.toString())
+    }
+    // ---------------------------------------------------------------------------------------------
 
-    // Convert Time To Preset Time
-    fun covertTimeToPresetTime(
-        seconds: Int,
-        minutes: Int,
-        hours: Int) {
+    fun resetPresetTimeOptionPanelState() {
+        t.areChangesMadeToPresetTime = false
+        t.selectedPresetTimeList = listOf()
+    }
 
-        // Pass Preset Time Values To Timer Text Field Values
-        timerStates.secondInput = TextFieldValue(seconds.toString())
-        timerStates.minuteInput = TextFieldValue(minutes.toString())
-        timerStates.hourInput = TextFieldValue(hours.toString()) }
+    fun addOrRemovePresetTimeFromList(presetTime: PresetTime, isSelected: Boolean) {
+        if (isSelected)
+        {t.selectedPresetTimeList += presetTime}
+        else
+        {t.selectedPresetTimeList -= presetTime}
+    }
 
+    fun covertTimeToPresetTime(seconds: Int, minutes: Int, hours: Int) {
+        t.secondInput = TextFieldValue(seconds.toString())
+        t.minuteInput = TextFieldValue(minutes.toString())
+        t.hourInput = TextFieldValue(hours.toString())
+    }
 }

@@ -1,43 +1,50 @@
 package com.timerpro.casualtimer.data.shared_data
 
+import com.timerpro.casualtimer.data.stopwatch_data.stopwatch_states.StopwatchStates
 import com.timerpro.casualtimer.data.stopwatch_data.stopwatch_states.stopwatchStates
+import com.timerpro.casualtimer.data.timer_data.timer_states.TimerStates
 import com.timerpro.casualtimer.data.timer_data.timer_states.timerStates
 
-class FormattedText {
+class FormattedText(s: StopwatchStates = stopwatchStates, t: TimerStates = timerStates) {
 
-    // Formatted Current Stopwatch Time Text
-    var formattedCurrentStopwatchTimeText = "%02d:%02d:%02d".format(
-        stopwatchStates.currentStopwatchHours,
-        stopwatchStates.currentStopwatchMinutes,
-        stopwatchStates.currentStopwatchSeconds,)
+    private fun formattedTimeText(hours: Int, minutes: Int, seconds: Int): String {
+        return "%02d:%02d:%02d".format(hours, minutes, seconds)
+    }
 
-    // Formatted Current Stopwatch Milliseconds Text
-    var formattedCurrentStopwatchMillisecondsText = ".%02d".format(
-        stopwatchStates.currentStopwatchMilliseconds)
+    private fun formattedMillisecondsText(milliseconds: Int): String {
+        return ".%02d".format(milliseconds)
+    }
 
-    // Formatted Lap Stopwatch Time Text
-    val formattedLapStopwatchTimeText = "%02d:%02d:%02d".format(
-        stopwatchStates.lapStopwatchHours,
-        stopwatchStates.lapStopwatchMinutes,
-        stopwatchStates.lapStopwatchSeconds)
+    // FORMATTED STOPWATCH TEXT --------------------------------------------------------------------
 
-    // Formatted Lap Stopwatch Milliseconds Text
-    val formattedLapStopwatchMillisecondsText = ".%02d".format(
+    // Current Stopwatch Time
+    val formattedCurrentStopwatchTimeText = formattedTimeText(
+        s.currentStopwatchHours, s.currentStopwatchMinutes, s.currentStopwatchSeconds)
+
+    val formattedCurrentStopwatchMillisecondsText = formattedMillisecondsText(
+        s.currentStopwatchMilliseconds)
+
+    // Lap Stopwatch Time
+    val formattedLapStopwatchTimeText = formattedTimeText(
+        s.lapStopwatchHours, s.lapStopwatchMinutes, s.lapStopwatchSeconds)
+
+    val formattedLapStopwatchMillisecondsText = formattedMillisecondsText(
         stopwatchStates.lapStopwatchMilliseconds)
 
-    //Formatted Lap Number
-    val formattedLapNumberText = "%02d".format(stopwatchStates.laps.size)
+    val formattedLapNumberText = formattedMillisecondsText(stopwatchStates.laps.size)
 
-    // Formatted Default Stopwatch Text
+    // Default Stopwatch Text
     val formattedDefaultStopwatchText = "00:00:00"
     val formattedDefaultMillisecondsText = ".00"
 
-    // Formatted Timer Text
-    var formattedCountDownTimerText = "%02d:%02d:%02d".format(timerStates.hoursRemaining, timerStates.minutesRemaining, timerStates.secondsRemaining)
+    // FORMATTED TIMER TEXT -----------------------------------------------------------------------
 
-    // Formatted Initial Time Text
-    var formattedInitialTimeText = "%02d:%02d:%02d".format(timerStates.hourInput.text.toInt(), timerStates.minuteInput.text.toInt(), timerStates.secondInput.text.toInt())
+    var formattedCountDownTimerText = formattedTimeText(
+        t.hoursRemaining, t.minutesRemaining, t.secondsRemaining)
 
-    // Formatted Negative Timer Text
-    var formattedNegativeCountDownTimerText = "-%02d:%02d:%02d".format(timerStates.hoursSinceTimerEnded, timerStates.minutesSinceTimerEnded, timerStates.secondsSinceTimerEnded)
+    var formattedInitialTimeText = formattedTimeText(
+        t.hourInput.text.toInt(), t.minuteInput.text.toInt(), t.secondInput.text.toInt())
+
+    var formattedNegativeCountDownTimerText = "-${formattedTimeText(
+        t.hoursSinceTimerEnded, t.minutesSinceTimerEnded, t.secondsSinceTimerEnded)}"
 }

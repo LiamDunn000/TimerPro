@@ -7,8 +7,9 @@ import androidx.lifecycle.ViewModel
 import com.timerpro.casualtimer.data.stopwatch_data.stopwatch_states.stopwatchStates
 import com.timerpro.casualtimer.data.shared_data.FormattedText
 import com.timerpro.casualtimer.R
+import com.timerpro.casualtimer.data.stopwatch_data.stopwatch_states.StopwatchStates
 
-class StopwatchNotification(context: Context): ViewModel(){
+class StopwatchNotification(context: Context, s: StopwatchStates = stopwatchStates): ViewModel(){
 
     // Stopwatch Notification
     val stopwatchNotification = NotificationCompat.Builder(context, "casual_timer_channel")
@@ -22,10 +23,10 @@ class StopwatchNotification(context: Context): ViewModel(){
             when {
 
                 // Changes Sub Text To "Paused"
-                !stopwatchStates.isStopwatchActive -> {"Paused"}
+                !s.isStopwatchActive -> {"Paused"}
 
                 // Changes Sub Text To Formatted Lap Number
-                stopwatchStates.laps.isNotEmpty() -> {"Lap ${FormattedText().formattedLapNumberText}"}
+                s.laps.isNotEmpty() -> {"Lap ${FormattedText().formattedLapNumberText}"}
 
                 // Changes Sub Text To An Empty String
                 else -> ""})
@@ -40,7 +41,7 @@ class StopwatchNotification(context: Context): ViewModel(){
             0,
 
             // Condition That Determines Toggle Stopwatch Action Button Text
-            when {stopwatchStates.isStopwatchActive -> "Pause" else -> "Resume" },
+            when {s.isStopwatchActive -> "Pause" else -> "Resume" },
 
             // Toggle Stopwatch Action Button PendingIntent
             StopwatchNotificationFunctionality(context).toggleStopwatchPendingIntent)
@@ -52,7 +53,7 @@ class StopwatchNotification(context: Context): ViewModel(){
             0,
 
             // Condition That Determines Lap And Reset Stopwatch Action Button Text
-            when {!stopwatchStates.isStopwatchActive && stopwatchStates.isStopwatchServiceActive || stopwatchStates.laps.size == 99 -> "Reset" else -> "Lap" },
+            when {!s.isStopwatchActive && s.isStopwatchServiceActive || s.laps.size == 99 -> "Reset" else -> "Lap" },
 
             // Lap And Reset Stopwatch Action Button PendingIntent
             StopwatchNotificationFunctionality(context).lapAndResetStopwatchPendingIntent)

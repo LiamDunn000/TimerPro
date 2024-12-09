@@ -9,7 +9,7 @@
 
     <application
 
-        android:name=".functionality.casual_timer_screen_functionality.CasualTimerApplication"
+        android:name=".functionality.general_functionality.TimerProApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"

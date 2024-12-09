@@ -7,51 +7,49 @@ import android.content.res.Configuration
 import android.media.MediaPlayer
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.timerpro.casualtimer.data.casual_timer_screen_data.casual_timer_datastore.CasualTimerDatastore
-import com.timerpro.casualtimer.data.timer_data.timer_dimensions.time_selection_screen_dimensions.PortraitTimeSelectionScreenDimensions
-import com.timerpro.casualtimer.data.timer_data.timer_room_data.PresetTimeInstance
+import com.timerpro.casualtimer.data.timer_data.timer_dimensions.time_selection_screen_dimensions.TimeSelectionScreenDimensions
 import com.timerpro.casualtimer.data.timer_data.timer_states.timerStates
-import com.timerpro.casualtimer.functionality.casual_timer_screen_functionality.casualTimerScreenFunctionality
-import com.timerpro.casualtimer.functionality.timer_functionality.presetTimeFunctionality
-import com.timerpro.casualtimer.presentation.timer_presentation.add_preset_time_dialog.add_preset_time_dialog_layouts.PortraitAddPresetTimeDialog
-import com.timerpro.casualtimer.presentation.timer_presentation.alarm_sound_selection_dialog.alarm_sound_selection_dialog_layouts.PortraitAlarmSoundSelectionDialog
-import com.timerpro.casualtimer.presentation.timer_presentation.count_down_timer_screen.count_down_timer_screen_layout.PortraitCountDownTimerScreen
-import com.timerpro.casualtimer.presentation.timer_presentation.time_selection_screen.time_selection_screen_composables.HourSelector
-import com.timerpro.casualtimer.presentation.timer_presentation.time_selection_screen.time_selection_screen_composables.MinuteSelector
-import com.timerpro.casualtimer.presentation.timer_presentation.time_selection_screen.time_selection_screen_composables.OpenAddPresetDialogButton
-import com.timerpro.casualtimer.presentation.timer_presentation.time_selection_screen.time_selection_screen_composables.OpenAlarmSoundSelectionDialogButton
-import com.timerpro.casualtimer.presentation.timer_presentation.time_selection_screen.time_selection_screen_composables.PortraitPresetTimeList
-import com.timerpro.casualtimer.presentation.timer_presentation.time_selection_screen.time_selection_screen_composables.SecondSelector
-import com.timerpro.casualtimer.presentation.timer_presentation.time_selection_screen.time_selection_screen_composables.StartTimerButton
+import com.timerpro.casualtimer.functionality.general_functionality.generalFunctionality
+import com.timerpro.casualtimer.presentation.shared_presentation.GeneralPurposeButton
+import com.timerpro.casualtimer.presentation.shared_presentation.TimeSelector
+import com.timerpro.casualtimer.presentation.timer_presentation.add_preset_time_dialog.PresetTimeDialog
+import com.timerpro.casualtimer.presentation.timer_presentation.alarm_sound_selection_dialog.AlarmSoundSelectionDialog
+import com.timerpro.casualtimer.presentation.timer_presentation.count_down_timer_screen.CountDownTimerScreen
+import com.timerpro.casualtimer.presentation.timer_presentation.time_selection_screen.time_selection_screen_components.OpenDialogButton
+import com.timerpro.casualtimer.presentation.timer_presentation.time_selection_screen.time_selection_screen_components.PresetTimeList
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun PortraitTimeSelectionScreen(
-    context: Context,
     configuration: Configuration,
+    modifier: Modifier = Modifier,
+    dimensions: TimeSelectionScreenDimensions = TimeSelectionScreenDimensions(configuration),
+    context: Context,
     alarmPlayer: MediaPlayer,
     casualTimerDatastore: CasualTimerDatastore,
 ) {
 
     // Logic That Closes Application When Back Button Is Pressed
-    BackHandler { (context as? Activity)?.moveTaskToBack(true) }
+    BackHandler { if (timerStates.selectedPresetTimeList.isNotEmpty())
+        timerStates.selectedPresetTimeList = listOf() else
+        (context as? Activity)?.moveTaskToBack(true) }
 
     // Move Slide To Timer If Deep Link Is Clicked
-    casualTimerScreenFunctionality.moveSliderToTimerIfDeepLinkIsClicked(context)
+    generalFunctionality.moveSliderToTimerIfDeepLinkIsClicked(context)
 
     AnimatedContent(targetState = timerStates.isTimerScreenVisible,
 
@@ -61,7 +59,7 @@ fun PortraitTimeSelectionScreen(
         when {
 
             // Transitions To Portrait Count Down Timer Screen
-            isTimerScreenActive -> PortraitCountDownTimerScreen(
+            isTimerScreenActive -> CountDownTimerScreen(
                 context = context,
                 configuration = configuration,
                 alarmPlayer = alarmPlayer)
@@ -79,24 +77,24 @@ fun PortraitTimeSelectionScreen(
                             horizontalArrangement = Arrangement.SpaceBetween) {
 
                             // Portrait Open Add Preset Time Dialog Button
-                            OpenAddPresetDialogButton(
+                            OpenDialogButton(
+                                configuration = configuration,
                                 context = context,
-                                fontSize = PortraitTimeSelectionScreenDimensions(configuration).portraitTimeSelectionScreenTopAppBarButtonSize)
+                                title = "Add Preset Time"
+                                )
 
                             // Portrait Open Alarm Sound Selection Dialog Button
-                            OpenAlarmSoundSelectionDialogButton(
+                            OpenDialogButton(
+                                configuration = configuration,
                                 context = context,
-                                fontSize = PortraitTimeSelectionScreenDimensions(configuration).portraitTimeSelectionScreenTopAppBarButtonSize) }}) {
+                                title = "Select Alarm Sound"
+                                )
+                             }}) {
 
                     // Portrait Add Preset Time Dialog
-                   PortraitAddPresetTimeDialog(
-                       context = context,
-                       onSave = {presetTimeFunctionality.insertPresetTime(presetTime = PresetTimeInstance().presetTimeInstance) },
-                       onCancel = {timerStates.isAddPresetTimeDialogOpen = false},
-                       configuration = configuration,
-                       )
+                   PresetTimeDialog(configuration = configuration)
 
-                    PortraitAlarmSoundSelectionDialog(
+                    AlarmSoundSelectionDialog(
                         configuration = configuration,
                         casualTimerDatastore = casualTimerDatastore)
 
@@ -104,68 +102,56 @@ fun PortraitTimeSelectionScreen(
                     Column(
                         modifier = Modifier
                             .padding(
-                                horizontal = PortraitTimeSelectionScreenDimensions(configuration).portraitTimeSelectionScreensHorizontalPadding.dp,
-                                vertical = PortraitTimeSelectionScreenDimensions(configuration).portraitTimeSelectionScreensVerticalPadding.dp)
+                                horizontal = dimensions.portraitHorizontalPadding,
+                                vertical = dimensions.portraitVerticalPadding
+                            )
                             .fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center) {
+                        verticalArrangement = Arrangement.SpaceBetween) {
 
-                         // Portrait Timer Selection Screen Text Field Panel
+                        // Portrait Time Selection Screen Top Spacer
+                       Spacer(modifier.weight(dimensions.portraitTopSpacerWeight))
+
+                         // Portrait Time Selection Panel
                          Row(
-                             modifier = Modifier
-                                 .padding(bottom = PortraitTimeSelectionScreenDimensions(configuration).portraitTimeSelectionScreensComposablePadding.dp)
-                                 .width(PortraitTimeSelectionScreenDimensions(configuration).portraitTimeSelectionScreenTextFieldPanelWidth.dp)
-                                 .height(PortraitTimeSelectionScreenDimensions(configuration).portraitTimeSelectionScreenTextFieldPanelHeight.dp)
-                                 .fillMaxWidth(),
-                             horizontalArrangement = Arrangement.SpaceEvenly,
-                             verticalAlignment = Alignment.CenterVertically) {
+                             horizontalArrangement = Arrangement.spacedBy(dimensions.timeSelectorSpacing),
+                             ) {
 
-                             // Portrait Hour Selector
-                             HourSelector(
-                                 context = context,
-                                 size = PortraitTimeSelectionScreenDimensions(configuration).portraitTimeSelectionTextFieldSize,
-                                 fontSize = PortraitTimeSelectionScreenDimensions(configuration).portraitTimeSelectionTextFieldFontSize,
-                                 buttonSize = PortraitTimeSelectionScreenDimensions(configuration).portraitIncrementAndDecrementButtonSize,
-                                 iconSize = PortraitTimeSelectionScreenDimensions(configuration).portraitIncrementAndDecrementIconSize,
-                                 verticalSpacing = PortraitTimeSelectionScreenDimensions(configuration).portraitTimeSelectionScreenTextFieldPanelVerticalSpacing)
+                             // Portrait Hours Selector
+                             TimeSelector(
+                                 configuration = configuration,
+                                 title = "Hours Selector")
 
-                             // Portrait Minute Selector
-                             MinuteSelector(
-                                 context = context,
-                                 size = PortraitTimeSelectionScreenDimensions(configuration).portraitTimeSelectionTextFieldSize,
-                                 fontSize = PortraitTimeSelectionScreenDimensions(configuration).portraitTimeSelectionTextFieldFontSize,
-                                 buttonSize = PortraitTimeSelectionScreenDimensions(configuration).portraitIncrementAndDecrementButtonSize,
-                                 iconSize = PortraitTimeSelectionScreenDimensions(configuration).portraitIncrementAndDecrementIconSize,
-                                 verticalSpacing = PortraitTimeSelectionScreenDimensions(configuration).portraitTimeSelectionScreenTextFieldPanelVerticalSpacing)
+                             // Portrait Minutes Selector
+                             TimeSelector(
+                                 configuration = configuration,
+                                 title = "Minutes Selector")
 
-                             // Portrait Second Selector
-                             SecondSelector(
-                                 context = context,
-                                 size = PortraitTimeSelectionScreenDimensions(configuration).portraitTimeSelectionTextFieldSize,
-                                 fontSize = PortraitTimeSelectionScreenDimensions(configuration).portraitTimeSelectionTextFieldFontSize,
-                                 buttonSize = PortraitTimeSelectionScreenDimensions(configuration).portraitIncrementAndDecrementButtonSize,
-                                 iconSize = PortraitTimeSelectionScreenDimensions(configuration).portraitIncrementAndDecrementIconSize,
-                                 verticalSpacing = PortraitTimeSelectionScreenDimensions(configuration).portraitTimeSelectionScreenTextFieldPanelVerticalSpacing) }
-
-                         // Portrait Time Selection Screen Button Panel
-                         Box(
-                             modifier = Modifier
-                                 .padding(top = PortraitTimeSelectionScreenDimensions(configuration).portraitTimeSelectionScreensComposablePadding.dp)
-                                 .width(PortraitTimeSelectionScreenDimensions(configuration).portraitTimeSelectionScreenButtonPanelWidth.dp)
-                                 .height(PortraitTimeSelectionScreenDimensions(configuration).portraitTimeSelectionScreenButtonPanelHeight.dp),
-                             contentAlignment = Alignment.Center) {
-
-                             // Portrait Start Timer Button
-                             StartTimerButton(
-                                 context = context,
-                                 width = PortraitTimeSelectionScreenDimensions(configuration).portraitStartTimerButtonWidth,
-                                 height = PortraitTimeSelectionScreenDimensions(configuration).portraitStartTimerButtonHeight,
-                                 fontSize = PortraitTimeSelectionScreenDimensions(configuration).portraitStartTimerButtonFontSize)
+                             // Portrait Seconds Selector
+                             TimeSelector(
+                                 configuration = configuration,
+                                 title = "Seconds Selector")
                          }
 
-                             // Portrait Preset Time List
-                             PortraitPresetTimeList(
-                                 context = context,
-                                 configuration = configuration)
+                        // Portrait Preset Time List
+                        Box(
+                            modifier
+                                .weight(animateFloatAsState(targetValue = dimensions.portraitPresetTimeListWeight).value),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            PresetTimeList(
+                                context = context,
+                                configuration = configuration,
+                                orientation = "Portrait")
+                        }
 
-                         }}}}}
+                        // Portrait Start Timer Button
+                        GeneralPurposeButton(
+                            configuration = configuration,
+                            title = "Start Timer")
+
+                    }
+                }
+        }
+    }
+}

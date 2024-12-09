@@ -10,7 +10,7 @@ class StopwatchReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {
         when(intent?.action) {
             Action.TOGGLE_STOPWATCH.name -> stopwatchCurrentTimeFunctionality.manageToggleStopwatchButtonOnClickStates(context)
-            Action.LAP_AND_RESET_STOPWATCH.name -> stopwatchLapTimeFunctionality.manageLapAndResetButtonOnClickStates(context)}}
+            Action.LAP_AND_RESET_STOPWATCH.name -> stopwatchLapTimeFunctionality.manageLapAndResetButtonOnClickStates(context = context)}}
 
     // Stopwatch Service Actions
     enum class Action {

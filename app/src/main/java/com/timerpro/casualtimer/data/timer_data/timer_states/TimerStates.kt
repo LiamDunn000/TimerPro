@@ -2,6 +2,7 @@ package com.timerpro.casualtimer.data.timer_data.timer_states
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.focus.FocusRequester
@@ -39,24 +40,24 @@ class TimerStates: ViewModel() {
     var isTimeUp by mutableStateOf(false)
 
     // Time Text Field Focus Requesters
-    val secondsFocusRequester =  FocusRequester()
-    val minutesFocusRequester = FocusRequester()
-    val hoursFocusRequester = FocusRequester()
+    var secondsFocusRequester =  FocusRequester()
+    var minutesFocusRequester = FocusRequester()
+    var hoursFocusRequester = FocusRequester()
 
     // Preset Time Text Field Focus Requesters
-    val presetSecondFocusRequester = FocusRequester()
-    val presetMinutesFocusRequester = FocusRequester()
-    val presetHoursFocusRequester = FocusRequester()
+    var presetSecondsFocusRequester = FocusRequester()
+    var presetMinutesFocusRequester = FocusRequester()
+    var presetHoursFocusRequester = FocusRequester()
 
     // Time Text Field Focus States
-    var isSecondTextFieldFocused by  mutableStateOf(false)
+    var isSecondsTextFieldFocused by  mutableStateOf(false)
     var isMinutesTextFieldFocused by mutableStateOf(false)
     var isHoursTextFieldFocused by mutableStateOf(false)
 
     // Preset Time Text Field Focus States
-    var isPresetSecondTextFieldFocused by mutableStateOf(false)
+    var isPresetSecondsTextFieldFocused by mutableStateOf(false)
     var isPresetMinutesTextFieldFocused by mutableStateOf(false)
-    var isPresetHourTextFieldFocused by mutableStateOf(false)
+    var isPresetHoursTextFieldFocused by mutableStateOf(false)
 
     // Timer Button States
     var isStartTimerButtonEnabled by mutableStateOf(false)
@@ -66,11 +67,12 @@ class TimerStates: ViewModel() {
 
     // Preset Time Variables
     var isAddPresetTimeDialogOpen by mutableStateOf(false)
-    var presetTimeNameTextFieldValue by mutableStateOf("")
+    var isPresetTimeOptionPanelVisible by mutableStateOf(false)
+    var isPresetTimeBeingEdited by mutableStateOf(false)
+    var areChangesMadeToPresetTime by mutableStateOf(false)
+    var presetTimeTitleTextFieldValue by mutableStateOf("")
     var presetTimeList by mutableStateOf(listOf<PresetTime>())
-
-    // Edit Preset Time Variables
-    var deleteAndCancelPresetTimeButtonText by mutableStateOf("Delete")
+    var selectedPresetTimeList by mutableStateOf(listOf<PresetTime>())
 
     // Sound Effect URIs
     val digitalAlarmClockSoundEffectUri = "android.resource://com.timerpro.casualtimer/raw/digital_alarm_clock_sound_effect"
@@ -83,6 +85,5 @@ class TimerStates: ViewModel() {
     var isAlarmSoundSelectionDialogOpen by mutableStateOf(false)
     var alarmSoundNames = listOf("Digital", "Vintage", "Classic", "School", "Jingle")
     var selectedAlarmSoundName by mutableStateOf(alarmSoundNames[0])
-    var selectedAlarmSound by mutableStateOf(digitalAlarmClockSoundEffectUri)
 
 }

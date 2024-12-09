@@ -6,10 +6,10 @@ import androidx.room.PrimaryKey
 @Entity
 data class PresetTime(
 
-    val name: String,
-    val hours: Int,
-    val minutes: Int,
-    val seconds: Int,
+    val name: String = "",
+    val hours: Int = 0,
+    val minutes: Int = 0,
+    val seconds: Int = 0,
 
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0

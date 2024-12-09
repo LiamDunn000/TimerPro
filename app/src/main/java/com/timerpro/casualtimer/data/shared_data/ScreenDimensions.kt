@@ -10,4 +10,7 @@ class ScreenDimensions(configuration: Configuration) {
     // Screen Height
     val screenHeight = configuration.screenHeightDp
 
+    // Screen Size
+    val screenSize = screenWidth + screenHeight
+
 }

@@ -20,7 +20,7 @@ interface PresetTimeDao {
 
     // Delete Preset Time
     @Delete
-    suspend fun deletePresetTime(presetTime: PresetTime)
+    suspend fun deletePresetTime(list: List<PresetTime>)
 
     // Retrieve All Preset Times
     @Query("SELECT * FROM PresetTime")

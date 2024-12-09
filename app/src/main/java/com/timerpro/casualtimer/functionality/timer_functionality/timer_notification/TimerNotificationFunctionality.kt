@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.lifecycle.ViewModel
-import com.timerpro.casualtimer.data.casual_timer_screen_data.casual_timer_screen_states.casualTimerScreenStates
+import com.timerpro.casualtimer.data.casual_timer_screen_data.casual_timer_screen_states.sharedStates
 
 class TimerNotificationFunctionality(context: Context): ViewModel() {
 
@@ -33,7 +33,7 @@ class TimerNotificationFunctionality(context: Context): ViewModel() {
     /* STOPWATCH NOTIFICATION INTENTS & ACTION BUTTON INTENTS
     ----------------------------------------------------------------------------------------------*/
     // Timer Deep Link Intent & Pending Intent
-    val timerDeepLinkIntent = Intent(Intent.ACTION_MAIN, Uri.parse(casualTimerScreenStates.fullTimeSelectionScreenDeepLinkUri))
+    val timerDeepLinkIntent = Intent(Intent.ACTION_MAIN, Uri.parse(sharedStates.fullTimeSelectionScreenDeepLinkUri))
     val timerDeepLinkPendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, timerDeepLinkIntent, PendingIntent.FLAG_IMMUTABLE)
 
     // Toggle Timer Intent & Pending Intent
