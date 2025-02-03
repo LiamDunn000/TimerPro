@@ -12,7 +12,7 @@ android {
         applicationId = "com.timerpro.casualtimer"
         minSdk = 26
         targetSdk = 34
-        versionCode = 4
+        versionCode = 5
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -76,6 +76,9 @@ dependencies {
 
     // Navigation
     implementation(libs.androidx.navigation.compose)
+
+    // Gson
+    implementation ("com.google.code.gson:gson:2.10.1")
 
     // Room
     implementation(libs.androidx.room.ktx)

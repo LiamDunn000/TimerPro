@@ -8,17 +8,22 @@ import com.timerpro.casualtimer.data.shared_data.ScreenDimensions
 
 class AlarmSoundSelectionDialogDimensions(configuration: Configuration, dimensions: ScreenDimensions = ScreenDimensions(configuration)) {
 
-    // Alarm Sound Selection Dialog Dimensions
-    val dialogSize = dimensions.screenSize * 0.28.dp
-
-    // Alarm Sound Selection Dialog Padding
-    val horizontalPadding = dimensions.screenSize * 0.03
-    val verticalPadding = dimensions.screenSize * 0.005
-
     // Alarm Sound Selection Dialog Font Dimensions
-    val headerFontSize = dimensions.screenSize * 0.013.sp
+    val headerFontSize = dimensions.screenSize * 0.015.sp
     val alarmSoundNameFontSize = dimensions.screenSize * 0.015.sp
 
-    // Alarm Sound Selection List Spacing
-    val listSpacing = dimensions.screenSize * 0.011
+    val height = dimensions.screenSize * 0.5.dp
+
+    val cornerRadius = dimensions.screenSize * 0.01.dp
+
+    // Alarm Sound Selection Dialog Item Dimensions
+    val itemHeight = dimensions.screenSize * 0.06.dp
+    val itemSpacing = dimensions.screenSize * 0.01.dp
+    val itemHorizontalPadding = dimensions.screenSize * 0.014.dp
+
+    val dividerHeight = dimensions.screenSize * 0.0005.dp
+
+    // Alarm Sound Selection Dialog Button Panel Dimensions
+    val buttonPanelDividerWidth = dimensions.screenSize * 0.001.dp
+    val buttonPanelDividerHeight = dimensions.screenSize * 0.01.dp
 }

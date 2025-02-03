@@ -49,7 +49,7 @@ class TimerStateFunctionality(val t: TimerStates = timerStates): ViewModel() {
                 t.hoursRemaining = t.hourInput.text.toInt()
                 countDownTime(context = context) }}}}
 
-    fun countDownTime(context: Context) {
+    private fun countDownTime(context: Context) {
         when {t.isTimerActive ->
             viewModelScope.launch {
 

@@ -12,18 +12,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalConfiguration
 import com.timerpro.casualtimer.data.shared_data.dimensions.CustomRadioDimensions
-import com.timerpro.casualtimer.data.timer_data.timer_states.timerStates
+import com.timerpro.casualtimer.data.timer_data.timer_states.AlarmSound
 import com.timerpro.casualtimer.functionality.shared_presentation_management.CustomRadioButtonManagement
 
 @Composable
 fun CustomRadioButton(
-    configuration: Configuration,
+    configuration: Configuration = LocalConfiguration.current,
     dimensions: CustomRadioDimensions = CustomRadioDimensions(configuration),
     functionality: CustomRadioButtonManagement = CustomRadioButtonManagement(),
     title: String,
     isSelected: Boolean = false,
-    text: String = timerStates.alarmSoundNames[0],
+    sound: AlarmSound = AlarmSound(),
 ) {
 
     // Custom Radio Button Layout
@@ -34,7 +35,7 @@ fun CustomRadioButton(
         .size(dimensions.buttonSize)
         .clip(shape = CircleShape)
         .border(color = functionality.determineButtonBorderColor(
-                title = title, text = text, isSelected = isSelected
+                title = title, sound = sound, isSelected = isSelected
         ),
             width = dimensions.borderWidth,
             shape = CircleShape),
@@ -43,7 +44,7 @@ fun CustomRadioButton(
         // Custom Radio Button Indicator
         Box(modifier = Modifier
             .background(color = functionality.determineButtonIndicatorColor(
-                    title = title, text = text, isSelected = isSelected
+                    title = title, sound = sound, isSelected = isSelected
                 ),
                 shape = CircleShape)
             .fillMaxSize(0.5f)) }}

@@ -1,30 +1,56 @@
 package com.timerpro.casualtimer.functionality.timer_functionality
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.media.MediaPlayer
 import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.timerpro.casualtimer.data.casual_timer_screen_data.casual_timer_datastore.CasualTimerDatastore
+import com.timerpro.casualtimer.data.timer_data.storage.alarm_sound_storage.AlarmSoundStorage
+import com.timerpro.casualtimer.data.timer_data.storage.alarm_sound_storage.alarmSoundStorage
+import com.timerpro.casualtimer.data.timer_data.timer_states.AlarmSound
 import com.timerpro.casualtimer.data.timer_data.timer_states.TimerStates
 import com.timerpro.casualtimer.data.timer_data.timer_states.alarmPlayer
 import com.timerpro.casualtimer.data.timer_data.timer_states.timerStates
 import com.timerpro.casualtimer.functionality.general_functionality.generalFunctionality
+import com.timerpro.casualtimer.functionality.general_functionality.permissionFunctionality
 import com.timerpro.casualtimer.functionality.timer_functionality.alarm_notification.AlarmNotificationFunctionality
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 val alarmStateFunctionality = AlarmStateFunctionality()
 
-class AlarmStateFunctionality(val t: TimerStates = timerStates): ViewModel() {
+class AlarmStateFunctionality(private val t: TimerStates = timerStates, private val a: AlarmSoundStorage = alarmSoundStorage): ViewModel() {
 
     fun playAlarm(context: Context, mediaPlayer: MediaPlayer) {
 
         // Conditional That Plays Alarm When Time Is Up
         when { t.isTimeUp -> {
-            mediaPlayer.prepare();mediaPlayer.start()
-        AlarmNotificationFunctionality(context).startAlarmService(context)}}}
+            try {
+
+                val deserializedAlarmSound = a.gson.fromJson(alarmSoundStorage.alarmSoundFile.readText(), AlarmSound::class.java)
+
+                // Reset Media Player
+                mediaPlayer.reset()
+
+                // Set Alarm Sound To Digital If No Alarm Sound Is Selected
+                mediaPlayer.setDataSource(context, if (a.alarmSoundFile.readText() == "") t.digitalAlarmClockSoundEffectUri.toUri() else deserializedAlarmSound.path.toUri())
+
+                // Prepare & Start Alarm
+                mediaPlayer.prepare(); mediaPlayer.start()
+
+                // Loop Alarm
+                mediaPlayer.isLooping = true
+
+                // Start Alarm Service
+                AlarmNotificationFunctionality(context).startAlarmService(context)
+
+            } catch (e: Exception) { generalFunctionality.showToast(context = context, message = "Audio Permission Denied") }
+        }}}
 
     fun dismissAlarm(context: Context, alarmPlayer: MediaPlayer) {
 
@@ -38,38 +64,61 @@ class AlarmStateFunctionality(val t: TimerStates = timerStates): ViewModel() {
         // Stop Alarm Service
         AlarmNotificationFunctionality(context).stopAlarmService(context) }
 
-    private fun updateAlarmSoundUri(context: Context, uri: Uri){
-        alarmPlayer.alarmPlayer.apply {
-            reset()
-            setDataSource(context, uri)
-            isLooping = true }}
+    fun saveAlarmSound(context: Context) {
 
-    fun determineAlarmSound(context: Context, alarmSound: String) {
+        try {
+            val serializedAlarmSound = a.gson.toJson(t.selectedAlarmSound)
+            a.alarmSoundFile.writeText(serializedAlarmSound)
+            generalFunctionality.showToast(context = context, message = "Alarm Sound Saved")
+        } catch (e: Exception) { generalFunctionality.showToast(context = context, message = "Alarm Sound Not Saved") }
 
-        // Conditional That Determines Alarm Sound
-        when (alarmSound) {
+        t.isAlarmSoundSelectionDialogOpen = false
 
-            // Digital
-            t.alarmSoundNames[0] -> updateAlarmSoundUri(context, t.digitalAlarmClockSoundEffectUri.toUri())
+        if (alarmPlayer.samplePlayer.isPlaying) {
+            alarmPlayer.samplePlayer.stop()}
+    }
 
-            // Vintage
-            t.alarmSoundNames[1] -> updateAlarmSoundUri(context, t.vintageAlarmClockSoundEffectUri.toUri())
+    fun openAlarmSoundSelectionDialog(context: Context) {
 
-            // Classic
-            t.alarmSoundNames[2] -> updateAlarmSoundUri(context, t.classicAlarmClockSoundEffectUri.toUri())
+        timerStates.areChangesMadeToAlarmSound = false
 
-            // School
-            t.alarmSoundNames[3] -> updateAlarmSoundUri(context, t.schoolBellSoundEffectUri.toUri())
+        // Request Permissions
+        permissionFunctionality.manageAudioFilePermissionRequests(context = context)
 
-            // Jingle
-            t.alarmSoundNames[4] -> updateAlarmSoundUri(context, t.jingleBellsSoundEffectUri.toUri())}}
+        // Open Alarm Sound Selection Dialog
+        t.isAlarmSoundSelectionDialogOpen = true
 
-    fun saveAlarmSound(casualTimerDatastore: CasualTimerDatastore){
-        viewModelScope.launch {
-            casualTimerDatastore.saveAlarmSound(casualTimerDatastore.alarmSoundKey, t.selectedAlarmSoundName) }}
+        // Load Alarm Sound
+        t.selectedAlarmSound = if (a.alarmSoundFile.readText() == "") {
+            AlarmSound(path = "android.resource://com.timerpro.casualtimer/raw/digital_alarm_clock_sound_effect", name = "Digital")
+        } else {
+            a.gson.fromJson(a.alarmSoundFile.readText(), AlarmSound::class.java)
+        }
 
-    fun loadAlarmSound(alarmSound: String){
-        t.selectedAlarmSoundName = alarmSound }
+        // Query Alarm Sounds If Permission Granted
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU && ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+        {alarmStateFunctionality.queryAlarmSoundsFromStorage(context = context)}
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            queryAlarmSoundsFromStorage(context = context) }
+    }
+
+    fun closeAlarmSoundSelectionDialog() {
+        timerStates.isAlarmSoundSelectionDialogOpen = false
+        timerStates.areChangesMadeToAlarmSound = false
+        alarmPlayer.samplePlayer.stop()
+    }
+
+    fun playAlarmSample(context: Context, mediaPlayer: MediaPlayer, path: String) {
+
+        try {
+            mediaPlayer.stop(); mediaPlayer.reset()
+            mediaPlayer.setDataSource(context, Uri.parse(path))
+            mediaPlayer.prepare()
+            mediaPlayer.start()
+        } catch (e: Exception) {
+            generalFunctionality.showToast(context = context, message = "Audio Permission Denied") }
+    }
 
     fun returnToTimeSelectionScreen(boolean: Boolean) {
 
@@ -86,6 +135,31 @@ class AlarmStateFunctionality(val t: TimerStates = timerStates): ViewModel() {
             t.secondsSinceTimerEnded = 0
             t.minutesSinceTimerEnded = 0
             t.hoursSinceTimerEnded = 0}}
+
+    private fun queryAlarmSoundsFromStorage(context: Context) {
+
+        val projection = arrayOf(
+            MediaStore.Audio.Media._ID,
+            MediaStore.Audio.Media.DATA,
+            MediaStore.Audio.Media.DISPLAY_NAME
+        )
+
+        context.contentResolver.query(
+            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+            projection,
+            null,
+            null,
+            null
+        )?.use { cursor ->
+            val idColumn = cursor.getColumnIndex(MediaStore.Audio.Media._ID)
+            val pathColumn = cursor.getColumnIndex(MediaStore.Audio.Media.DATA)
+            val nameColumn = cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME)
+
+            while (cursor.moveToNext()) {
+                val id = cursor.getLong(idColumn)
+                val path = cursor.getString(pathColumn)
+                val name = cursor.getString(nameColumn)
+                timerStates.alarmSounds += (AlarmSound(id, path?:"", name?:"")) }}}
 
 
 

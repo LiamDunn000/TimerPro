@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.viewModelScope
@@ -29,7 +30,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun GeneralPurposeButton(
-    configuration: Configuration,
+    configuration: Configuration = LocalConfiguration.current,
     modifier: Modifier = Modifier,
     dimensions: GeneralPurposeButtonDimensions = GeneralPurposeButtonDimensions(configuration),
     functionality: GeneralPurposeButtonManagement = GeneralPurposeButtonManagement(),
@@ -64,10 +65,6 @@ fun GeneralPurposeButton(
                     onDoubleTap = {}
                 )
             }
-            .shadow(
-                elevation = dimensions.elevation,
-                shape = RoundedCornerShape(dimensions.cornerRadius)
-            )
             .background(
                 color = if (title == "Start Timer") {
                     animateColorAsState(targetValue = functionality.determineButtonBackgroundColor(buttonTitle = title),

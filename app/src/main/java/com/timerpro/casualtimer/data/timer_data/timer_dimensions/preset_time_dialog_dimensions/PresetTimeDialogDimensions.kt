@@ -8,14 +8,14 @@ import com.timerpro.casualtimer.data.shared_data.ScreenDimensions
 
 class PresetTimeDialogDimensions(
     configuration: Configuration,
-    dimensions: ScreenDimensions = ScreenDimensions(configuration)) {
+    dimen: ScreenDimensions = ScreenDimensions(configuration)) {
 
-    val dialogSize = dimensions.screenSize * 0.28.dp
-    val horizontalPadding = dimensions.screenSize * 0.03.dp
-    val verticalPadding = dimensions.screenSize * 0.02.dp
-    val cornerRadius = 1
+    val dialogSize = dimen.screenSize * 0.28.dp
+    val horizontalPadding = dimen.screenSize * 0.03.dp
+    val verticalPadding = dimen.screenSize * 0.02.dp
+    val cornerRadius = dimen.screenSize * 0.007.dp
 
     // Preset Time Dialog Title Text Field Dimensions
-    val titleTextFieldHeight = dimensions.screenSize * 0.045.dp
-    val titleTextFieldFontSize = dimensions.screenSize * 0.013.sp
+    val titleTextFieldHeight = dimen.screenSize * 0.045.dp
+    val titleTextFieldFontSize = dimen.screenSize * 0.013.sp
 }

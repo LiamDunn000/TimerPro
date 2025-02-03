@@ -40,7 +40,6 @@ class GeneralPurposeButtonManagement: ViewModel() {
             "Lap And Reset Stopwatch" -> stopwatchLapTimeFunctionality.manageLapAndResetButtonOnClickStates(context = context)
             "Save Preset Time" -> presetTimeFunctionality.insertPresetTime(context = context, presetTime = PresetTimeInstance().presetTimeInstance)
             "Update Preset Time" -> presetTimeFunctionality.updatePresetTime(context = context)
-            "Close Alarm Sound Selection Dialog" -> {timerStates.isAlarmSoundSelectionDialogOpen = false; generalFunctionality.vibrateOnButtonClick(context = context)}
             "Cancel Timer" -> timerStateFunctionality.cancelTimer(context = context)
             "Dismiss Alarm" -> alarmStateFunctionality.dismissAlarm(context = context, alarmPlayer = alarmPlayer)
         }
@@ -68,7 +67,6 @@ class GeneralPurposeButtonManagement: ViewModel() {
             "Save Preset Time" -> "Save"
             "Update Preset Time" -> "Update"
             "Close Preset Time Dialog" -> "Cancel"
-            "Close Alarm Sound Selection Dialog" -> "Cancel"
             "Toggle Timer" -> determineToggleTimerButtonText()
             "Cancel Timer" -> "Cancel"
             "Dismiss Alarm" -> "Dismiss"
@@ -100,13 +98,10 @@ class GeneralPurposeButtonManagement: ViewModel() {
     fun determineButtonBackgroundColor(buttonTitle: String): Color {
         return when (buttonTitle) {
             "Toggle Stopwatch" -> determineToggleStopwatchButtonBackgroundColor()
-            "Lap And Reset Stopwatch" -> determineLapAndResetStopwatchButtonBackgroundColor()
+            "Lap And Reset Stopwatch" -> Colors().mediumDarkWhite
             "Start Timer" -> determineStartTimerButtonBackgroundColor()
-            "Save Preset Time" -> Colors().lightBlue
-            "Close Preset Time Dialog" -> Colors().lightRed
-            "Close Alarm Sound Selection Dialog" -> Colors().lightRed
             "Toggle Timer" -> determineToggleTimerButtonBackgroundColor()
-            "Cancel Timer" -> Colors().mediumDarkWhite
+            "Cancel Timer", "Close Preset Time Dialog" -> Colors().mediumDarkWhite
             "Dismiss Alarm" -> Colors().lightRed
         else -> Colors().lightBlue
         }
@@ -115,11 +110,6 @@ class GeneralPurposeButtonManagement: ViewModel() {
     private fun determineToggleStopwatchButtonBackgroundColor(): Color {
         return if (!stopwatchStates.isStopwatchActive)
             Colors().lightBlue else Colors().lightRed
-    }
-
-    private fun determineLapAndResetStopwatchButtonBackgroundColor(): Color {
-        return if (stopwatchStates.isStopwatchActive && stopwatchStates.laps.size != 99)
-        Colors().lightBlue else Colors().lightRed
     }
 
     private fun determineStartTimerButtonBackgroundColor(): Color {
@@ -136,8 +126,9 @@ class GeneralPurposeButtonManagement: ViewModel() {
     // BUTTON TEXT COLOR ---------------------------------------------------------------------------
     fun determineButtonTextColor(buttonTitle: String): Color {
         return when (buttonTitle) {
+            "Lap And Reset Stopwatch" -> Colors().darkGray
             "Start Timer" -> determineStartTimerButtonTextColor()
-            "Cancel Timer" -> Colors().darkGray
+            "Cancel Timer", "Close Preset Time Dialog" -> Colors().darkGray
         else -> Colors().white}
     }
 

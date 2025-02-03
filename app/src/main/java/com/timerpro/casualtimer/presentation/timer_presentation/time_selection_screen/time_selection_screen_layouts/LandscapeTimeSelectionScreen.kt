@@ -21,17 +21,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.timerpro.casualtimer.data.casual_timer_screen_data.casual_timer_datastore.CasualTimerDatastore
 import com.timerpro.casualtimer.data.shared_data.Colors
 import com.timerpro.casualtimer.data.timer_data.timer_dimensions.time_selection_screen_dimensions.TimeSelectionScreenDimensions
 import com.timerpro.casualtimer.data.timer_data.timer_states.timerStates
 import com.timerpro.casualtimer.functionality.general_functionality.generalFunctionality
 import com.timerpro.casualtimer.presentation.shared_presentation.GeneralPurposeButton
+import com.timerpro.casualtimer.presentation.shared_presentation.TextOnlyButton
 import com.timerpro.casualtimer.presentation.shared_presentation.TimeSelector
 import com.timerpro.casualtimer.presentation.timer_presentation.add_preset_time_dialog.PresetTimeDialog
-import com.timerpro.casualtimer.presentation.timer_presentation.alarm_sound_selection_dialog.AlarmSoundSelectionDialog
+import com.timerpro.casualtimer.presentation.timer_presentation.alarm_sound_selection_dialog.AlarmSoundSelection
 import com.timerpro.casualtimer.presentation.timer_presentation.count_down_timer_screen.CountDownTimerScreen
-import com.timerpro.casualtimer.presentation.timer_presentation.time_selection_screen.time_selection_screen_components.OpenDialogButton
 import com.timerpro.casualtimer.presentation.timer_presentation.time_selection_screen.time_selection_screen_components.PresetTimeList
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -40,8 +39,7 @@ fun LandscapeTimeSelectionScreen(
     configuration: Configuration,
     dimensions: TimeSelectionScreenDimensions = TimeSelectionScreenDimensions(configuration),
     context: Context,
-    alarmPlayer: MediaPlayer,
-    casualTimerDatastore: CasualTimerDatastore) {
+    alarmPlayer: MediaPlayer) {
 
     // Logic That Closes Application When Back Button Is Pressed
     BackHandler{ (context as? Activity)?.moveTaskToBack(true)}
@@ -73,26 +71,17 @@ fun LandscapeTimeSelectionScreen(
                     horizontalArrangement = Arrangement.SpaceBetween) {
 
                     // Landscape Open Add Preset Time Dialog Button
-                    OpenDialogButton(
-                        configuration = configuration,
-                        context = context,
-                        title = "Add Preset Time"
-                    )
+                   TextOnlyButton(title = "Open Preset Time Dialog")
 
                     // Landscape Open Alarm Sound Selection List Button
-                    OpenDialogButton(
-                        configuration = configuration,
-                        context = context,
-                        title = "Select Alarm Sound"
-                    )
+                   TextOnlyButton(title = "Open Alarm Sound Selection Dialog")
                 }}) {
 
             // Landscape Add Preset Time Dialog
             PresetTimeDialog(configuration = configuration)
 
-            AlarmSoundSelectionDialog(
-                configuration = configuration,
-                casualTimerDatastore = casualTimerDatastore)
+            // Landscape Alarm Sound Selection Dialog
+            AlarmSoundSelection()
 
             // Landscape Stopwatch Screen Layout
             Row(

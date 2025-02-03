@@ -2,7 +2,6 @@ package com.timerpro.casualtimer.data.timer_data.timer_states
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.focus.FocusRequester
@@ -62,7 +61,6 @@ class TimerStates: ViewModel() {
     // Timer Button States
     var isStartTimerButtonEnabled by mutableStateOf(false)
     var isCancelButtonClicked by mutableStateOf(false)
-    var toggleTimerButtonText by mutableStateOf("Pause")
     var isToggleTimerActionButtonPressed by mutableStateOf(false)
 
     // Preset Time Variables
@@ -74,16 +72,20 @@ class TimerStates: ViewModel() {
     var presetTimeList by mutableStateOf(listOf<PresetTime>())
     var selectedPresetTimeList by mutableStateOf(listOf<PresetTime>())
 
-    // Sound Effect URIs
+    // Default Alarm Sound
     val digitalAlarmClockSoundEffectUri = "android.resource://com.timerpro.casualtimer/raw/digital_alarm_clock_sound_effect"
-    val vintageAlarmClockSoundEffectUri = "android.resource://com.timerpro.casualtimer/raw/vintage_alarm_clock_sound_effect"
-    val classicAlarmClockSoundEffectUri = "android.resource://com.timerpro.casualtimer/raw/classic_alarm_clock_sound_effect"
-    val schoolBellSoundEffectUri = "android.resource://com.timerpro.casualtimer/raw/school_bell_sound_effect"
-    val jingleBellsSoundEffectUri = "android.resource://com.timerpro.casualtimer/raw/jingle_bells_sound_effect"
+
+    // Alarm Sound List
+    var alarmSounds = mutableListOf(
+        AlarmSound(path = "android.resource://com.timerpro.casualtimer/raw/digital_alarm_clock_sound_effect", name = "Digital"),
+        AlarmSound(path = "android.resource://com.timerpro.casualtimer/raw/vintage_alarm_clock_sound_effect", name = "Vintage"),
+        AlarmSound(path = "android.resource://com.timerpro.casualtimer/raw/classic_alarm_clock_sound_effect", name = "Classic"),
+        AlarmSound(path = "android.resource://com.timerpro.casualtimer/raw/school_bell_sound_effect", name = "School"),
+        AlarmSound(path = "android.resource://com.timerpro.casualtimer/raw/jingle_bells_sound_effect", name = "Jingle"))
 
     // Alarm Variables
     var isAlarmSoundSelectionDialogOpen by mutableStateOf(false)
-    var alarmSoundNames = listOf("Digital", "Vintage", "Classic", "School", "Jingle")
-    var selectedAlarmSoundName by mutableStateOf(alarmSoundNames[0])
+    var selectedAlarmSound by mutableStateOf(AlarmSound())
+    var areChangesMadeToAlarmSound by mutableStateOf(false)
 
 }

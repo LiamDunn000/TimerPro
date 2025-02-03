@@ -14,7 +14,7 @@ class GeneralPurposeButtonDimensions(
 
     fun size(title: String, standardSize: Double, smallSize: Double): Double {
          return title.let { if (it == "Save Preset Time"|| it == "Close Preset Time Dialog" ||
-             it == "Update Preset Time" || it == "Delete Preset Time" || it == "Close Alarm Sound Selection Dialog"
+             it == "Update Preset Time" || it == "Delete Preset Time"
                 ) dimensions.screenSize * smallSize else  dimensions.screenSize * standardSize
             }
     }

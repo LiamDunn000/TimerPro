@@ -20,16 +20,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.timerpro.casualtimer.data.casual_timer_screen_data.casual_timer_datastore.CasualTimerDatastore
 import com.timerpro.casualtimer.data.timer_data.timer_dimensions.time_selection_screen_dimensions.TimeSelectionScreenDimensions
 import com.timerpro.casualtimer.data.timer_data.timer_states.timerStates
 import com.timerpro.casualtimer.functionality.general_functionality.generalFunctionality
 import com.timerpro.casualtimer.presentation.shared_presentation.GeneralPurposeButton
+import com.timerpro.casualtimer.presentation.shared_presentation.TextOnlyButton
 import com.timerpro.casualtimer.presentation.shared_presentation.TimeSelector
 import com.timerpro.casualtimer.presentation.timer_presentation.add_preset_time_dialog.PresetTimeDialog
-import com.timerpro.casualtimer.presentation.timer_presentation.alarm_sound_selection_dialog.AlarmSoundSelectionDialog
+import com.timerpro.casualtimer.presentation.timer_presentation.alarm_sound_selection_dialog.AlarmSoundSelection
 import com.timerpro.casualtimer.presentation.timer_presentation.count_down_timer_screen.CountDownTimerScreen
-import com.timerpro.casualtimer.presentation.timer_presentation.time_selection_screen.time_selection_screen_components.OpenDialogButton
 import com.timerpro.casualtimer.presentation.timer_presentation.time_selection_screen.time_selection_screen_components.PresetTimeList
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -39,8 +38,7 @@ fun PortraitTimeSelectionScreen(
     modifier: Modifier = Modifier,
     dimensions: TimeSelectionScreenDimensions = TimeSelectionScreenDimensions(configuration),
     context: Context,
-    alarmPlayer: MediaPlayer,
-    casualTimerDatastore: CasualTimerDatastore,
+    alarmPlayer: MediaPlayer
 ) {
 
     // Logic That Closes Application When Back Button Is Pressed
@@ -74,29 +72,23 @@ fun PortraitTimeSelectionScreen(
                         // Portrait Timer Selection Screen Top Bar Layout
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween) {
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                            ) {
 
-                            // Portrait Open Add Preset Time Dialog Button
-                            OpenDialogButton(
-                                configuration = configuration,
-                                context = context,
-                                title = "Add Preset Time"
-                                )
+                            // Portrait Add Preset Time Button
+                           TextOnlyButton(title = "Open Preset Time Dialog")
 
                             // Portrait Open Alarm Sound Selection Dialog Button
-                            OpenDialogButton(
-                                configuration = configuration,
-                                context = context,
-                                title = "Select Alarm Sound"
-                                )
+                            TextOnlyButton(title = "Open Alarm Sound Selection Dialog")
+
                              }}) {
 
                     // Portrait Add Preset Time Dialog
-                   PresetTimeDialog(configuration = configuration)
+                    PresetTimeDialog(configuration = configuration)
 
-                    AlarmSoundSelectionDialog(
-                        configuration = configuration,
-                        casualTimerDatastore = casualTimerDatastore)
+                    // Portrait Alarm Sound Selection Dialog
+                    AlarmSoundSelection()
 
                     // Portrait Timer Selection Screen Layout
                     Column(

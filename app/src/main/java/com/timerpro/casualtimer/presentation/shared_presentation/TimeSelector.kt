@@ -2,11 +2,11 @@ package com.timerpro.casualtimer.presentation.shared_presentation
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,7 +18,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.timerpro.casualtimer.data.shared_data.Colors
 import com.timerpro.casualtimer.data.shared_data.dimensions.TimeSelectorDimensions
 import com.timerpro.casualtimer.functionality.shared_presentation_management.TimeSelectorManagement
 
@@ -46,33 +45,34 @@ fun TimeSelector(
         )
 
         // Time Selector TextField
-        TextField(
-            value = functionality.determineTextFieldValue(title = title),
-            onValueChange = { newText ->
-                functionality.determineOnValueChange(title = title, newText = newText)
-            },
+        Box(
+            modifier = Modifier.size(dimensions.selectorSize(title = title).dp),
+            contentAlignment = Alignment.Center
+        ) {
+            BasicTextField(
+                value = functionality.determineTextFieldValue(title = title),
+                onValueChange = { newText ->
+                    functionality.determineOnValueChange(title = title, newText = newText)
+                },
 
-            singleLine = true,
-            modifier = Modifier
-                .size(dimensions.selectorSize(title = title).dp)
-                .focusRequester(functionality.determineFocusRequester(title = title))
-                .onFocusChanged { focusState ->
-                    functionality.determineFocusState(title = title, focusState = focusState) },
+                singleLine = true,
+                modifier = Modifier
+                    .focusRequester(functionality.determineFocusRequester(title = title))
+                    .onFocusChanged { focusState ->
+                        functionality.determineFocusState(title = title, focusState = focusState)
+                    },
 
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Number),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number
+                ),
 
-            colors = TextFieldDefaults.colors(
-                unfocusedContainerColor = Colors().transparent,
-                focusedContainerColor = Colors().transparent,
-                unfocusedIndicatorColor = Colors().transparent,
-                focusedIndicatorColor = Colors().transparent
-            ),
-
-            textStyle = TextStyle(
-                fontSize = dimensions.fontSize(title = title).sp,
-                fontWeight = FontWeight.SemiBold,
-                textAlign = TextAlign.Center))
+                textStyle = TextStyle(
+                    fontSize = dimensions.fontSize(title = title).sp,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Center
+                ),
+            )
+        }
 
         // Time Selector Decrement Button
         ModifyTimeButton(

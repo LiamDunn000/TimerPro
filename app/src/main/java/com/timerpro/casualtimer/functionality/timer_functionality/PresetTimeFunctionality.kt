@@ -83,6 +83,14 @@ class PresetTimeFunctionality(val t: TimerStates = timerStates): ViewModel() {
     // ---------------------------------------------------------------------------------------------
 
     // PRESET TIME DIALOG --------------------------------------------------------------------------
+
+    fun openCreatePresetTimeDialog() {
+        t.isPresetTimeBeingEdited = false
+        t.isAddPresetTimeDialogOpen = true
+        t.selectedPresetTimeList = listOf()
+        presetTimeFunctionality.resetAddPresetTimeDialogTextFieldValues()
+    }
+
     fun resetPresetTimeDialogState() {
         t.isAddPresetTimeDialogOpen = false
         t.isPresetTimeBeingEdited = false
